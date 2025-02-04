@@ -1,34 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
+  const [isActive, setIsActive] = useState(false); // ✅ Control menu state
+
   return (
     <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
       <div className="container">
         <div className="navbar-brand">
-          <a className="navbar-item" href="/">
+          <Link className="navbar-item" to="/">
             <strong>OWASAPA</strong>
-          </a>
-          <a
-            role="button"
-            className="navbar-burger"
+          </Link>
+
+          {/* ✅ Correct mobile menu toggle */}
+          <button
+            className={`navbar-burger ${isActive ? "is-active" : ""}`}
             aria-label="menu"
-            aria-expanded="false"
-            data-target="navbarMenu"
-            onClick={() => {
-              document.querySelector(".navbar-burger").classList.toggle("is-active");
-              document.querySelector("#navbarMenu").classList.toggle("is-active");
-            }}
+            aria-expanded={isActive}
+            onClick={() => setIsActive(!isActive)}
           >
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
-          </a>
+          </button>
         </div>
 
-        <div id="navbarMenu" className="navbar-menu">
+        {/* ✅ Mobile Menu */}
+        <div id="navbarMenu" className={`navbar-menu ${isActive ? "is-active" : ""}`}>
           <div className="navbar-end">
-            <a className="navbar-item" href="/login">Login</a>
-            <a className="navbar-item" href="/register">Register</a>
+            <Link className="navbar-item" to="/login">Login</Link>
+            <Link className="navbar-item" to="/register">Register</Link>
+            <Link className="navbar-item" to="/create">Create Post</Link> {/* ✅ Added "Create Post" */}
           </div>
         </div>
       </div>
