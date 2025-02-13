@@ -6,7 +6,7 @@ const Post = require("../models/Post");
 const resolvers = {
   Query: {
     users: async () => await User.find(),
-    posts: async () => await Post.find().populate("author"),
+    posts: async () => await Post.find({ published: true }).populate("author"), 
   },
   Mutation: {
     register: async (_, { username, email, password }) => {
@@ -30,12 +30,31 @@ const resolvers = {
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
       return { token, user };
     },
-    createPost: async (_, { title, content, imageUrl }, context) => {
+    createPost: async (_, { title, content, image }, context) => {
+      if (!context.user) {
+        throw new Error("Unauthorized"); // Prevent unauthorized users from posting
+      }
+
+      const post = new Post({
+        title,
+        content,
+        image,
+        author: context.user.id, // Assign the logged-in user as the author
+        published: false, 
+      });
+
+      await post.save();
+      return post;
+    },
+    publishPost: async (_, { postId }, context) => {
       if (!context.user) throw new Error("Unauthorized");
 
-      const post = new Post({ title, content, imageUrl, author: context.user.id });
-      await post.save();
+      const post = await Post.findById(postId);
+      if (!post) throw new Error("Post not found");
+      if (post.author.toString() !== context.user.id) throw new Error("Not authorized to publish this post");
 
+      post.published = true;
+      await post.save();
       return post;
     },
   },

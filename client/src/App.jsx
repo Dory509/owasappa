@@ -1,11 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import client from "./apolloClient";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import CreatePost from "./pages/CreatePost";  // Import CreatePost page
+import CreatePost from "./pages/CreatePost";
 import Navbar from "./components/Navbar";
+
+const PrivateRoute = ({ element }) => {
+  const token = localStorage.getItem("token");
+  return token ? element : <Navigate to="/login" />;
+};
 
 const App = () => {
   return (
@@ -16,7 +21,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/create" element={<CreatePost />} />  {/* Add this */}
+          <Route path="/create" element={<PrivateRoute element={<CreatePost />} />} />
         </Routes>
       </Router>
     </ApolloProvider>

@@ -7,6 +7,11 @@ export const CREATE_POST = gql`
       title
       content
       image
+      published
+      author {
+        id
+        username
+      }
     }
   }
 `;
@@ -18,9 +23,24 @@ export const GET_POSTS = gql`
       title
       content
       image
+      published
       author {
+        id
         username
       }
+    }
+  }
+`;
+
+// Ensure `PUBLISH_POST` is a Mutation, Not Query
+export const PUBLISH_POST = gql`
+  mutation PublishPost($postId: ID!) {
+    publishPost(postId: $postId) {
+      id
+      title
+      content
+      image
+      published
     }
   }
 `;
